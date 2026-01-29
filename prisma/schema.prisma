@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+ provider= "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id         Int      @id @default(autoincrement())
+  fullName   String
+  email      String   @unique
+  password   String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  details    EmployeeDetails?
+  roles      EmployeeRole[]
+  logins     EmployeeLoginHistory[]
+}
+
+model EmployeeDetails {
+  id         Int      @id @default(autoincrement())
+  employeeId Int      @unique
+
+  mobile     String?   @db.VarChar(15)
+  age        Int?
+  salary     Decimal?  @db.Decimal(10, 2)
+
+  employee   Employee  @relation(fields: [employeeId], references: [id])
+}
+
+
+model Role {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  employees EmployeeRole[]
+}
+
+model EmployeeRole {
+  employeeId Int
+  roleId     Int
+
+  assignedAt DateTime @default(now())
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  role       Role     @relation(fields: [roleId], references: [id])
+
+  @@id([employeeId, roleId])
+}
+
+model EmployeeLoginHistory {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+
+  loginAt    DateTime @default(now())
+  logoutAt   DateTime?
+  ipAddress  String?
+  userAgent  String?
+  isSuccess  Boolean
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+}

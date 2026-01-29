@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const employeerole_controller_1 = require("../controller/employeerole.controller");
+const auth_middleware_1 = require("../../middleware/auth.middleware");
+const role_middleware_1 = require("../../middleware/role.middleware");
+const router = (0, express_1.Router)();
+const controller = new employeerole_controller_1.EmployeeRoleController();
+router.post('/assign', auth_middleware_1.authMiddleware, (0, role_middleware_1.requireRole)(['ADMIN']), controller.assign);
+router.get('/', auth_middleware_1.authMiddleware, controller.list);
+exports.default = router;
