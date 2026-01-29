@@ -76,7 +76,7 @@ export class AuthService {
           userAgent: meta?.userAgent,
         },
       });
-      throw new Error('Invalid credentials');
+      throw new Error('invalid email or password');
     }
 
     //  successful login → save history
